@@ -3,7 +3,7 @@
 
 This project contains the code for transforming the modelscope text to video synthesis model to a text + image to video model and the code for generating videos with the new model.
 
-This is an alternative and improved version of this [repo](https://github.com/motexture/modelscope-image-to-video-v2).
+This is an alternative and improved version of this [repo](https://github.com/motexture/modelscope-image-to-video-v1).
 
 ## Getting Started
 
