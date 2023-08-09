@@ -44,6 +44,13 @@ class ConditionalNorm(nn.Module):
             nn.SiLU()
         )
 
+        # Zero initialization
+        nn.init.zeros_(self.gamma[0].weight)
+        nn.init.ones_(self.gamma[0].bias)  # for gamma, bias is initialized to 1
+        
+        nn.init.zeros_(self.beta[0].weight)
+        nn.init.zeros_(self.beta[0].bias)  # for beta, bias is initialized to 0
+
     def forward(self, x, y):
         batch, _, _, height, width = y.shape
 
@@ -63,11 +70,6 @@ class ConditioningBlock(nn.Module):
 
         self.conditioning_norm = ConditionalNorm(dim)
 
-        self.conditioning_temp = nn.Conv3d(dim, dim, (3, 3, 3), padding=(1, 1, 1))
-
-        nn.init.zeros_(self.conditioning_temp.weight)
-        nn.init.zeros_(self.conditioning_temp.bias)
-
     def forward(self, hidden_states, init_image, num_frames=1):
         hidden_states = (
             hidden_states[None, :].reshape((-1, num_frames) + hidden_states.shape[1:]).permute(0, 2, 1, 3, 4)
@@ -78,8 +80,6 @@ class ConditioningBlock(nn.Module):
         init_image = init_image.unsqueeze(2)
         init_image = init_image.repeat(1, 1, num_frames, 1, 1)
         hidden_states = self.conditioning_norm(init_image, hidden_states)
-
-        hidden_states = self.conditioning_temp(hidden_states)
 
         hidden_states = identity + hidden_states
         
@@ -457,7 +457,6 @@ class Upsample2D(nn.Module):
 
         return hidden_states, init_image
     
-
 def downsample_2d(hidden_states, kernel=None, factor=2, gain=1):
     r"""Downsample2D a batch of 2D images with the given filter.
     Accepts a batch of 2D images of the shape `[N, C, H, W]` or `[N, H, W, C]` and downsamples each image with the
@@ -491,7 +490,6 @@ def downsample_2d(hidden_states, kernel=None, factor=2, gain=1):
         hidden_states, kernel.to(device=hidden_states.device), down=factor, pad=((pad_value + 1) // 2, pad_value // 2)
     )
     return output
-
 
 def upsample_2d(hidden_states, kernel=None, factor=2, gain=1):
     r"""Upsample2D a batch of 2D images with the given filter.
@@ -528,7 +526,6 @@ def upsample_2d(hidden_states, kernel=None, factor=2, gain=1):
         pad=((pad_value + 1) // 2 + factor - 1, pad_value // 2),
     )
     return output
-
 
 def upfirdn2d_native(tensor, kernel, up=1, down=1, pad=(0, 0)):
     up_x = up_y = up
