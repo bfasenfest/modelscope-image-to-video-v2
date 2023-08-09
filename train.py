@@ -87,7 +87,7 @@ def handle_temporal_params(model, is_enabled=True):
     unfrozen_params = 0
 
     for name, module in model.named_modules():
-        if 'conditioning_conv' in name or 'conditioning_block' in name:
+        if 'conditioning_conv' in name or 'conditioning_norm' in name:
             for m in module.parameters():
                 m.requires_grad_(is_enabled)
                 if is_enabled: unfrozen_params +=1
