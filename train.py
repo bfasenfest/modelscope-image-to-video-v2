@@ -230,7 +230,6 @@ def main(
     pretrained_3d_model_path: str,
     pretrained_2d_model_path: str,
     upgrade_model: bool,
-    resume_from_checkpoint: bool,
     output_dir: str,
     train_data: Dict,
     validation_data: Dict,
@@ -243,6 +242,7 @@ def main(
     enable_xformers_memory_efficient_attention: bool = False,
     enable_torch_2_attn: bool = True,
     offset_noise_strength: float = 0.1,
+    resume_from_checkpoint: bool = False,
     resume_step: int = None,
     **kwargs
 ):
