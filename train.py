@@ -230,6 +230,7 @@ def main(
     pretrained_3d_model_path: str,
     pretrained_2d_model_path: str,
     upgrade_model: bool,
+    resume_from_checkpoint: bool,
     output_dir: str,
     train_data: Dict,
     validation_data: Dict,
@@ -242,6 +243,7 @@ def main(
     enable_xformers_memory_efficient_attention: bool = False,
     enable_torch_2_attn: bool = True,
     offset_noise_strength: float = 0.1,
+    resume_step: int = None,
     **kwargs
 ):
     dist.init_process_group(backend='nccl')
@@ -330,6 +332,9 @@ def main(
 
     for _ in range(0, epochs):
         for batch in train_dataloader:
+            if resume_from_checkpoint and global_step < resume_step:
+                global_step += 1
+                continue
             with autocast():
                 loss = finetune_unet(batch)
 
